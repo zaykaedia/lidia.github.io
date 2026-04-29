@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Лидочка 3D ❤️</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle, #210014 0%, #000 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+
+  .scene {
+    perspective: 1300px;
+  }
+
+  .word {
+    position: relative;
+    transform-style: preserve-3d;
+    animation: rotate3d 9s ease-in-out infinite alternate;
+  }
+
+  .heart {
+    position: absolute;
+    color: #ff4f9a;
+    font-size: 13px;
+    text-shadow:
+      0 0 6px #ff99c8,
+      0 0 14px #ff2f80,
+      0 0 30px #ff0066;
+    transform-style: preserve-3d;
+    animation: pulse 1.7s ease-in-out infinite;
+  }
+
+  @keyframes rotate3d {
+    0% {
+      transform: rotateY(-32deg) rotateX(12deg) rotateZ(-2deg);
+    }
+    100% {
+      transform: rotateY(32deg) rotateX(12deg) rotateZ(2deg);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(2);
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  <div class="word" id="word"></div>
+</div>
+
+<script>
+const word = document.getElementById("word");
+const text = "лидочка";
+
+const temp = document.createElement("canvas");
+const ctx = temp.getContext("2d");
+
+temp.width = 1150;
+temp.height = 360;
+
+ctx.fillStyle = "white";
+ctx.font = "900 155px Arial";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(text, temp.width / 2, temp.height / 2);
+
+const data = ctx.getImageData(0, 0, temp.width, temp.height).data;
+
+for (let y = 0; y < temp.height; y += 10) {
+  for (let x = 0; x < temp.width; x += 10) {
+    const index = (y * temp.width + x) * 4;
+
+    if (data[index] > 120) {
+
+      for (let layer = 0; layer < 5; layer++) {
+        const heart = document.createElement("span");
+        heart.className = "heart";
+        heart.innerHTML = "❤";
+
+        const finalX = x - temp.width / 2;
+        const finalY = y - temp.height / 2;
+        const finalZ = layer * 18 - 35;
+
+        heart.style.opacity = 0.35 + layer * 0.15;
+        heart.style.fontSize = 11 + layer + "px";
+
+        heart.animate([
+          {
+            transform: `
+              translate3d(${(Math.random() - 0.5) * 1400}px,
+              ${(Math.random() - 0.5) * 800}px,
+              ${Math.random() * 600 - 300}px)
+              scale(0)
+            `,
+            opacity: 0
+          },
+          {
+            transform: `
+              translate3d(${finalX}px, ${finalY}px, ${finalZ}px)
+              scale(1)
+            `,
+            opacity: 1
+          }
+        ], {
+          duration: 2300 + Math.random() * 1200,
+          easing: "cubic-bezier(.2,.9,.2,1)",
+          fill: "forwards",
+          delay: Math.random() * 700
+        });
+
+        heart.style.animationDelay = Math.random() * 2 + "s";
+        word.appendChild(heart);
+      }
+    }
+  }
+}
+</script>
+
+</body>
+</html>
